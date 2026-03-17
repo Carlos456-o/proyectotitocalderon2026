@@ -12,6 +12,8 @@ node_modules
 dist
 dist-ssr
 *.local
+VITE_SUPABASE_API_KEY =
+VITE_SUPABASE_URL =
 
 # Editor directories and files
 .vscode/*
