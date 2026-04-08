@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import React from "react";
+import { Navigate } from "react-router-dom";
 
 const RutaProtegida = ({ children }) => {
-  return (
-    <Container className="mt-3">
-      <Row className="align-items-center">
-        <Col>
-          <h2><i className="bi bi-house-fill me-2"></i> Inicio</h2>
-        </Col>
-      </Row>
-    </Container>
-  );
+  // Verifica si el usuario está autenticado usando localStorage
+  const estaLogueado = !!localStorage.getItem("usuario-supabase");
+
+  // Log para depuración
+  console.log("Usuario autenticado:", estaLogueado);
+
+  // Si está autenticado,redirige a la página de login
+  return estaLogueado ? children : <Navigate to="/login" replace />;
 };
 
 export default RutaProtegida;
