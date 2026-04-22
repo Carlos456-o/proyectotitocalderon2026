@@ -6,6 +6,7 @@ import TablaCategorias from "../components/categorias/TablaCategorias";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 import ModalEdicionCategoria from "../components/categorias/ModalEdicionCategoria";
 import ModalEliminacionCategoria from "../components/categorias/ModalEliminacionCategoria";
+import TarjetaCategoria from "../components/categorias/TarjetaCategoria";
 
 const Categorias = () => {
 
@@ -252,7 +253,17 @@ const Categorias = () => {
           </Button>
         </Col>
       </Row>
+
       <hr />
+
+      <Col xs={12} sm={12} md={12} className="d-lg-none">
+  <TarjetaCategoria
+    categorias={categorias}
+    abrirModalEdicion={abrirModalEdicion}
+    abrirModalEliminacion={abrirModalEliminacion}
+  />
+</Col>
+
 
       {/* Spinner mientras se cargan las categorías */}
       {cargando && (
