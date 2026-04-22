@@ -4,12 +4,104 @@ import { supabase } from "../database/supabaseconfig";
 import ModalRegistroCategoria from "../components/categorias/ModalRegistroCategoria";
 import TablaCategorias from "../components/categorias/TablaCategorias";
 import NotificacionOperacion from "../components/NotificacionOperacion";
+import ModalEdicionCategoria from "../components/categorias/ModalEdicionCategoria";
+import ModalEliminacionCategoria from "../components/categorias/ModalEliminacionCategoria";
 
 const Categorias = () => {
 
   useEffect(() => {
     cargarCategorias();
   }, []);
+
+  const manejoCambioInputEdicion = (e) => {
+    const { name, value } = e.target;
+    setCategoriaEditar((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const eliminarCategoria = async () => {
+    if (!categoriaAEliminar) return;
+    try {
+      setMostrarModalEliminacion(false);
+      const { error } = await supabase
+        .from("categorias")
+        .delete()
+        .eq("id_categoria", categoriaAEliminar.id_categoria);
+      if (error) {
+        console.error("Error al eliminar categoria:", error.message);
+        setToast({
+          mostrar: true,
+          mensaje: `Error al eliminar la categoria ${categoriaAEliminar.nombre_categoria}.`,
+          tipo: "error",
+        });
+        return;
+      }
+      await cargarCategorias();
+      setToast({
+        mostrar: true,
+        mensaje: `Categoría ${categoriaAEliminar.nombre_categoria} eliminada exitosamente.`,
+        tipo: "exito",
+      });
+    } catch (err) {
+      setToast({
+        mostrar: true,
+        mensaje: "Error inesperado al eliminar categoria.",
+        tipo: "error",
+      });
+      console.error("Excepción al eliminar categoría:", err.message);
+    }
+  };
+
+
+  const actualizarCategoria = async () => {
+    try {
+      if (!categoriaEditar.nombre_categoria.trim() || !categoriaEditar.descripcion_categoria.trim()) {
+        setToast({
+          mostrar: true,
+          mensaje: "Debe llenar todos los campos.",
+          tipo: "advertencia"
+        });
+        return;
+      }
+
+      setMostrarModalEdicion(false);
+
+      const { error } = await supabase
+        .from("categorias")
+        .update({
+          nombre_categoria: categoriaEditar.nombre_categoria,
+          descripcion_categoria: categoriaEditar.descripcion_categoria
+        })
+        .eq("id_categoria", categoriaEditar.id_categoria);
+
+      if (error) {
+        console.error("Error al actualizar categoria:", error.message);
+        setToast({
+          mostrar: true,
+          mensaje: `Error al actualizar la categoria ${categoriaEditar.nombre_categoria}.`,
+          tipo: "error"
+        });
+        return;
+      }
+
+      await cargarCategorias();
+      setToast({
+        mostrar: true,
+        mensaje: `Categoria ${categoriaEditar.nombre_categoria} actualizada exitosamente.`,
+        tipo: "exito"
+      });
+    } catch (err) {
+      setToast({
+        mostrar: true,
+        mensaje: "Error inesperado al actualizar categoria.",
+        tipo: "error"
+      });
+      console.error("Excepción al actualizar categoria:", err.message);
+    }
+  };
+
 
   const cargarCategorias = async () => {
     try {
@@ -194,6 +286,23 @@ const Categorias = () => {
         manejoCambioInput={manejoCambioInput}
         agregarCategoria={agregarCategoria}
       />
+
+      <ModalEliminacionCategoria
+        mostrarModalEliminacion={mostrarModalEliminacion}
+        setMostrarModalEliminacion={setMostrarModalEliminacion}
+        eliminarCategoria={eliminarCategoria}
+        categoria={categoriaAEliminar}
+      />
+
+
+      <ModalEdicionCategoria
+        mostrarModalEdicion={mostrarModalEdicion}
+        setMostrarModalEdicion={setMostrarModalEdicion}
+        categoriaEditar={categoriaEditar}
+        manejoCambioInputEdicion={manejoCambioInputEdicion}
+        actualizarCategoria={actualizarCategoria}
+      />
+
 
       {/* Notificación */}
       <NotificacionOperacion
