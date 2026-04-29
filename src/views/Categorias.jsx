@@ -185,7 +185,6 @@ const Categorias = () => {
     }
   };
 
-
   const abrirModalEdicion = (categoria) => {
     setCategoriaEditar({
       id_categoria: categoria.id_categoria,
@@ -199,11 +198,6 @@ const Categorias = () => {
     setCategoriaAEliminar(categoria);
     setMostrarModalEliminacion(true);
   };
-
-
-
-
-
 
   const manejoCambioInput = (e) => {
     const { name, value } = e.target;
@@ -250,6 +244,8 @@ const Categorias = () => {
         mensaje: `Categoría "${nuevaCategoria.nombre_categoria}" registrada exitosamente.`,
         tipo: "exito",
       });
+
+      cargarCategorias();
 
       // Limpiar formulario y cerrar modal
       setNuevaCategoria({ nombre_categoria: "", descripcion_categoria: "" });
