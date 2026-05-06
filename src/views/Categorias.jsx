@@ -172,6 +172,7 @@ const Categorias = () => {
         return;
       }
 
+      console.log("Categorías cargadas:", data);
       setCategorias(data || []);
     } catch (err) {
       console.error("Excepción al cargar categorías:", err.message);
@@ -298,6 +299,26 @@ const Categorias = () => {
         </Col>
       </Row>
 
+      {/* Lista de categorías filtradas */}
+{!cargando && categoriasFiltradas.length > 0 && (
+  <Row>
+    <Col xs={12} sm={12} md={12} className="d-lg-none">
+      <TarjetaCategoria
+        categorias={categoriasFiltradas}
+        abrirModalEdicion={abrirModalEdicion}
+        abrirModalEliminacion={abrirModalEliminacion}
+      />
+    </Col>
+    <Col lg={12} className="d-none d-lg-block">
+      <TablaCategorias
+        categorias={categoriasFiltradas}
+        abrirModalEdicion={abrirModalEdicion}
+        abrirModalEliminacion={abrirModalEliminacion}
+      />
+    </Col>
+  </Row>
+)}
+
       {/* Mensaje de no coincidencias solo cuando hay búsqueda y no hay resultados */}
       {!cargando && textoBusqueda.trim() && categoriasFiltradas.length === 0 && (
         <Row className="mb-4">
@@ -310,14 +331,16 @@ const Categorias = () => {
         </Row>
       )}
 
-      <Col xs={12} sm={12} md={12} className="d-lg-none">
-        <TarjetaCategoria
-          categorias={categorias}
-          abrirModalEdicion={abrirModalEdicion}
-          abrirModalEliminacion={abrirModalEliminacion}
-        />
-      </Col>
-
+      {!cargando && categorias.length === 0 && !textoBusqueda.trim() && (
+        <Row className="mb-4">
+          <Col>
+            <Alert variant="info" className="text-center">
+              <i className="bi bi-info-circle me-2"></i>
+              No hay categorías registradas. Agrega una nueva categoría para comenzar.
+            </Alert>
+          </Col>
+        </Row>
+      )}
 
       {/* Spinner mientras se cargan las categorías */}
       {cargando && (
@@ -325,19 +348,6 @@ const Categorias = () => {
           <Col>
             <Spinner animation="border" variant="success" size="lg" />
             <p className="mt-3 text-muted">Cargando categorías ...</p>
-          </Col>
-        </Row>
-      )}
-
-      {/* Lista de categorías cargadas */}
-      {!cargando && categorias.length > 0 && (
-        <Row>
-          <Col lg={12} className="d-none d-lg-block">
-            <TablaCategorias
-              categorias={categorias}
-              abrirModalEdicion={abrirModalEdicion}
-              abrirModalEliminacion={abrirModalEliminacion}
-            />
           </Col>
         </Row>
       )}

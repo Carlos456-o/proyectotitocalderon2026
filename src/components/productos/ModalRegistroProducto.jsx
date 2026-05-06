@@ -18,7 +18,6 @@ const ModalRegistroProducto = ({
     setDeshabilitado(false);
   };
 
-
   return (
     <Modal
       show={mostrarModal}
