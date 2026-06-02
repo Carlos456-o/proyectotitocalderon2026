@@ -3,11 +3,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Container, Nav, Navbar, Offcanvas } from "react-bootstrap";
 import logo from "../../assets/sopa.png";
 import { supabase } from "../..//database/supabaseconfig";
+import ChatIA from "../ia/ChatIA";
 
 function Encabezado() {
   const [mostrarMenu, setMostrarMenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation(); // Para detectar la ruta actual
+  const [mostrarChatIA, setMostrarChatIA] = useState(false);
 
   const manejarToggle = () => setMostrarMenu(!mostrarMenu);
 
@@ -89,6 +91,28 @@ function Encabezado() {
             {mostrarMenu ? <i className="bi-people-fill me-2"></i> : null}
             <strong>Empleados</strong>
           </Nav.Link>
+          <Nav.Link
+            onClick={() => manejarNavegación("/Clientes")}
+            className={mostrarMenu ? "color-texto-marca" : "text-black"}
+          >
+            {mostrarMenu ? <i className="bi-people-fill me-2"></i> : null}
+            <strong>Clientes</strong>
+          </Nav.Link>
+          <Nav.Link
+            onClick={() => manejarNavegación("/Ventas")}
+            className={mostrarMenu ? "color-texto-marca" : "text-black"}
+          >
+            {mostrarMenu ? <i className="bi-cart-check-fill me-2"></i> : null}
+            <strong>Ventas</strong>
+          </Nav.Link>
+
+          <Nav.Link onClick={() => setMostrarChatIA(true)} className="text-white">
+  <i className="bi bi-robot me-2"></i>
+</Nav.Link>
+
+
+
+
           {/* Opción para ir al catálogo público desde admin */}
           <Nav.Link
             onClick={() => manejarNavegación("/Catalogo")}
@@ -114,68 +138,71 @@ function Encabezado() {
   }
 
   return (
-    <Navbar
-      expand="md"
-      fixed="top"
-      className="color-navbar shadow-lg"
-      variant="dark"
-    >
-      <Container>
-        <Navbar.Brand
-          onClick={() => manejarNavegación(esCatalogo ? "/catalogo" : "/")}
-          className="text-white fw-bold d-flex align-items-center"
-          style={{ cursor: "pointer" }}
-        >
-          <img
-            alt=""
-            src={logo}
-            width="45"
-            height="45"
-            className="d-inline-block me-2"
-          />
-          <strong>
-            <h4 className="mb-0">Discosa</h4>
-          </strong>
-        </Navbar.Brand>
-        {/* Botón del menú */}
-        {!esLogin && (
-          <Navbar.Toggle
-            aria-controls="menu-offcanvas"
-            onClick={manejarToggle}
-          />
-        )}
-        {/* Menú lateral */}
-        <Navbar.Offcanvas
-          id="menu-offcanvas"
-          placement="end"
-          show={mostrarMenu}
-          onHide={() => setMostrarMenu(false)}
-        >
-          <Offcanvas.Header closeButton>
-            <Offcanvas.Title>Menú Discosa</Offcanvas.Title>
-          </Offcanvas.Header>
-          <Offcanvas.Body>
-            {contenidoMenu}
-            {/* Información de usuario y botón cerrar sesión */}
-            {mostrarMenu && (
-              <div className="mt-3 p-3 rounded bg-light text-dark">
-                <p className="mb-2">
-                  <i className="bi-envelope-fill me-2"></i>{" "}
-                  {localStorage.getItem("usuario-supabase")?.toLowerCase() ||
-                    "Usuario"}
-                </p>
-                <button
-                  className="btn btn-outline-danger mt-3 w-100"
-                  onClick={cerrarSesion}
-                >
-                  <i className="bi-box-arrow-right me-2"></i> Cerrar sesión
-                </button>
-              </div>
-            )}
-          </Offcanvas.Body>
-        </Navbar.Offcanvas>
-      </Container>
-    </Navbar>
+    <>
+      <Navbar
+        expand="md"
+        fixed="top"
+        className="color-navbar shadow-lg"
+        variant="dark"
+      >
+        <Container>
+          <Navbar.Brand
+            onClick={() => manejarNavegación(esCatalogo ? "/catalogo" : "/")}
+            className="text-white fw-bold d-flex align-items-center"
+            style={{ cursor: "pointer" }}
+          >
+            <img
+              alt=""
+              src={logo}
+              width="45"
+              height="45"
+              className="d-inline-block me-2"
+            />
+            <strong>
+              <h4 className="mb-0">Tito calderon</h4>
+            </strong>
+          </Navbar.Brand>
+          {/* Botón del menú */}
+          {!esLogin && (
+            <Navbar.Toggle
+              aria-controls="menu-offcanvas"
+              onClick={manejarToggle}
+            />
+          )}
+          {/* Menú lateral */}
+          <Navbar.Offcanvas
+            id="menu-offcanvas"
+            placement="end"
+            show={mostrarMenu}
+            onHide={() => setMostrarMenu(false)}
+          >
+            <Offcanvas.Header closeButton>
+              <Offcanvas.Title>Menú Tito calderon</Offcanvas.Title>
+            </Offcanvas.Header>
+            <Offcanvas.Body>
+              {contenidoMenu}
+              {/* Información de usuario y botón cerrar sesión */}
+              {mostrarMenu && (
+                <div className="mt-3 p-3 rounded bg-light text-dark">
+                  <p className="mb-2">
+                    <i className="bi-envelope-fill me-2"></i>{" "}
+                    {localStorage.getItem("usuario-supabase")?.toLowerCase() ||
+                      "Usuario"}
+                  </p>
+                  <button
+                    className="btn btn-outline-danger mt-3 w-100"
+                    onClick={cerrarSesion}
+                  >
+                    <i className="bi-box-arrow-right me-2"></i> Cerrar sesión
+                  </button>
+                </div>
+              )}
+            </Offcanvas.Body>
+          </Navbar.Offcanvas>
+        </Container>
+      </Navbar>
+      <ChatIA mostrar={mostrarChatIA} onCerrar={() => setMostrarChatIA(false)} />
+    </>
   );
 }
 

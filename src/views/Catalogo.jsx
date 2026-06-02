@@ -90,7 +90,7 @@ const obtenerNombreCategoria = (idCategoria) => {
     <div className="mt-3 px-1">
   <Row className="text-center mb-1">
     <Col>
-      <p className="lead text-muted">Nuestros productos de belleza</p>
+      <p className="lead text-muted">Nuestros productos</p>
     </Col>
   </Row>
   <Row className="mb-1 align-items-end">
