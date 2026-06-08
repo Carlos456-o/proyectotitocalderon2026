@@ -8,8 +8,27 @@ import NotificacionOperacion from "../components/NotificacionOperacion";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 import ModalEliminacionProducto from "../components/productos/ModalEliminacionProducto";
 import ModalEdicionProducto from "../components/productos/ModalEdicionProducto";
+import ModalQRProducto from "../components/productos/ModalQRProducto";
+
 
 const Productos = () => {
+
+  const [mostrarModalQR, setMostrarModalQR] = useState(false);
+const [productoQR, setProductoQR] = useState(null);
+
+const generarQRImagen = (producto) => {
+  if (!producto?.url_imagen) {
+    setToast({
+      mostrar: true,
+      mensaje: "Este producto no tiene imagen asociada",
+      tipo: "advertencia"
+    });
+    return;
+  }
+  setProductoQR(producto);
+  setMostrarModalQR(true);
+};
+
   const actualizarProducto = async () => {
   try {
     // Verificar que los campos obligatorios estén completos
@@ -386,6 +405,7 @@ const manejoCambioArchivoActualizar = (e) => {
               categorias={categorias}
               abrirModalEdicion={abrirModalEdicion}
               abrirModalEliminacion={abrirModalEliminacion}
+              generarQRImagen={generarQRImagen}
             />
           </Col>
           <Col lg={12} className="d-none d-lg-block">
@@ -394,6 +414,7 @@ const manejoCambioArchivoActualizar = (e) => {
               categorias={categorias}
               abrirModalEdicion={abrirModalEdicion}
               abrirModalEliminacion={abrirModalEliminacion}
+              generarQRImagen={generarQRImagen}
             />
           </Col>
         </Row>
@@ -457,6 +478,13 @@ const manejoCambioArchivoActualizar = (e) => {
         eliminarProducto={eliminarProducto}
         producto={productoAEliminar}
       />
+
+      <ModalQRProducto
+  mostrar={mostrarModalQR}
+  onHide={() => setMostrarModalQR(false)}
+  producto={productoQR}
+/>
+
 
       <NotificacionOperacion
         mostrar={toast.mostrar}

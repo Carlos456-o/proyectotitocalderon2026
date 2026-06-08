@@ -268,6 +268,32 @@ const Categorias = () => {
     }
   };
 
+  const copiarCategoria = async (categoria) => {
+  if (!categoria) return;
+
+  const texto = `
+ID: ${categoria.id_categoria}
+Categoría: ${categoria.nombre_categoria}
+Descripción: ${categoria.descripcion_categoria || 'Sin descripción'}`;
+
+  try {
+    await navigator.clipboard.writeText(texto);
+    setToast({
+      mostrar: true,
+      mensaje: `Categoría "${categoria.nombre_categoria}" copiada al portapapeles`,
+      tipo: "exito",
+    });
+  } catch (err) {
+    console.error("Error al copiar:", err);
+    setToast({
+      mostrar: true,
+      mensaje: "No se pudo copiar al portapapeles",
+      tipo: "error",
+    });
+  }
+};
+
+
   // Inicializar EmailJS
   useEffect(() => {
     emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
@@ -396,6 +422,7 @@ const Categorias = () => {
               categorias={categoriasFiltradas}
               abrirModalEdicion={abrirModalEdicion}
               abrirModalEliminacion={abrirModalEliminacion}
+              copiarCategoria={copiarCategoria}
             />
           </Col>
           <Col lg={12} className="d-none d-lg-block">
@@ -403,6 +430,7 @@ const Categorias = () => {
               categorias={categoriasFiltradas}
               abrirModalEdicion={abrirModalEdicion}
               abrirModalEliminacion={abrirModalEliminacion}
+              copiarCategoria={copiarCategoria}
             />
           </Col>
         </Row>

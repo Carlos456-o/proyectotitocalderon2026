@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Spinner, Button } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-const TablaProductos = ({ productos, categorias, abrirModalEdicion, abrirModalEliminacion }) => {
+const TablaProductos = ({ productos, categorias, abrirModalEdicion, abrirModalEliminacion, generarQRImagen }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -53,6 +53,15 @@ const TablaProductos = ({ productos, categorias, abrirModalEdicion, abrirModalEl
                 onClick={() => abrirModalEliminacion(producto)}
               >
                 <i className="bi bi-trash"></i>
+              </Button>
+              <Button
+                variant="outline-primary"
+                size="sm"
+                className="m-1"
+                onClick={() => generarQRImagen(producto)}
+                title="Generar código QR de la imagen"
+              >
+                <i className="bi bi-qr-code"></i>
               </Button>
             </td>
           </tr>
