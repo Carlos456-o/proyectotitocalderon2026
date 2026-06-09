@@ -14,124 +14,124 @@ import ModalQRProducto from "../components/productos/ModalQRProducto";
 const Productos = () => {
 
   const [mostrarModalQR, setMostrarModalQR] = useState(false);
-const [productoQR, setProductoQR] = useState(null);
+  const [productoQR, setProductoQR] = useState(null);
 
-const generarQRImagen = (producto) => {
-  if (!producto?.url_imagen) {
-    setToast({
-      mostrar: true,
-      mensaje: "Este producto no tiene imagen asociada",
-      tipo: "advertencia"
-    });
-    return;
-  }
-  setProductoQR(producto);
-  setMostrarModalQR(true);
-};
-
-  const actualizarProducto = async () => {
-  try {
-    // Verificar que los campos obligatorios estén completos
-    if (
-      !productoEditar.nombre_producto.trim() ||
-      !productoEditar.categoria_producto ||
-      !productoEditar.precio_venta
-    ) {
+  const generarQRImagen = (producto) => {
+    if (!producto?.url_imagen) {
       setToast({
         mostrar: true,
-        mensaje: "Completa los campos obligatorios",
+        mensaje: "Este producto no tiene imagen asociada",
         tipo: "advertencia"
       });
       return;
     }
+    setProductoQR(producto);
+    setMostrarModalQR(true);
+  };
 
-    // Cerrar el modal de edición
-    setMostrarModalEdicion(false);
-
-    // Preparar los datos actualizados
-    let datosActualizados = {
-      nombre_producto: productoEditar.nombre_producto,
-      descripcion_producto: productoEditar.descripcion_producto || null,
-      categoria_producto: productoEditar.categoria_producto,
-      precio_venta: parseFloat(productoEditar.precio_venta),
-      url_imagen: productoEditar.url_imagen
-    };
-
-    // Si se ha seleccionado una nueva imagen
-    if (productoEditar.archivo) {
-      const nombreArchivo = `${Date.now()}_${productoEditar.archivo.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from("imagenes_productos")
-        .upload(nombreArchivo, productoEditar.archivo);
-      if (uploadError) throw uploadError;
-      const { data: urlData } = supabase.storage
-        .from("imagenes_productos")
-        .getPublicUrl(nombreArchivo);
-      datosActualizados.url_imagen = urlData.publicUrl;
-
-      // Eliminar la imagen anterior si existe
-      if (productoEditar.url_imagen) {
-        const nombreAnterior = productoEditar.url_imagen.split("/").pop().split("?")[0];
-        await supabase.storage.from("imagenes_productos").remove([nombreAnterior]).catch(() => {});
+  const actualizarProducto = async () => {
+    try {
+      // Verificar que los campos obligatorios estén completos
+      if (
+        !productoEditar.nombre_producto.trim() ||
+        !productoEditar.categoria_producto ||
+        !productoEditar.precio_venta
+      ) {
+        setToast({
+          mostrar: true,
+          mensaje: "Completa los campos obligatorios",
+          tipo: "advertencia"
+        });
+        return;
       }
+
+      // Cerrar el modal de edición
+      setMostrarModalEdicion(false);
+
+      // Preparar los datos actualizados
+      let datosActualizados = {
+        nombre_producto: productoEditar.nombre_producto,
+        descripcion_producto: productoEditar.descripcion_producto || null,
+        categoria_producto: productoEditar.categoria_producto,
+        precio_venta: parseFloat(productoEditar.precio_venta),
+        url_imagen: productoEditar.url_imagen
+      };
+
+      // Si se ha seleccionado una nueva imagen
+      if (productoEditar.archivo) {
+        const nombreArchivo = `${Date.now()}_${productoEditar.archivo.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from("imagenes_productos")
+          .upload(nombreArchivo, productoEditar.archivo);
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabase.storage
+          .from("imagenes_productos")
+          .getPublicUrl(nombreArchivo);
+        datosActualizados.url_imagen = urlData.publicUrl;
+
+        // Eliminar la imagen anterior si existe
+        if (productoEditar.url_imagen) {
+          const nombreAnterior = productoEditar.url_imagen.split("/").pop().split("?")[0];
+          await supabase.storage.from("imagenes_productos").remove([nombreAnterior]).catch(() => { });
+        }
+      }
+
+      // Actualizar el producto en la base de datos
+      const { error } = await supabase
+        .from("productos")
+        .update(datosActualizados)
+        .eq("id_producto", productoEditar.id_producto);
+      if (error) throw error;
+
+      // Recargar la lista de productos
+      await cargarProductos();
+
+      // Limpiar el estado del producto editado
+      setProductoEditar({
+        id_producto: "",
+        nombre_producto: "",
+        descripcion_producto: "",
+        categoria_producto: "",
+        precio_venta: "",
+        url_imagen: "",
+        archivo: null
+      });
+
+      // Mostrar un mensaje de éxito
+      setToast({
+        mostrar: true,
+        mensaje: "Producto actualizado correctamente",
+        tipo: "exito"
+      });
+    } catch (err) {
+      console.error("Error al actualizar:", err);
+      setToast({
+        mostrar: true,
+        mensaje: "Error al actualizar producto",
+        tipo: "error"
+      });
     }
+  };
 
-    // Actualizar el producto en la base de datos
-    const { error } = await supabase
-      .from("productos")
-      .update(datosActualizados)
-      .eq("id_producto", productoEditar.id_producto);
-    if (error) throw error;
-
-    // Recargar la lista de productos
-    await cargarProductos();
-
-    // Limpiar el estado del producto editado
-    setProductoEditar({
-      id_producto: "",
-      nombre_producto: "",
-      descripcion_producto: "",
-      categoria_producto: "",
-      precio_venta: "",
-      url_imagen: "",
-      archivo: null
-    });
-
-    // Mostrar un mensaje de éxito
-    setToast({
-      mostrar: true,
-      mensaje: "Producto actualizado correctamente",
-      tipo: "exito"
-    });
-  } catch (err) {
-    console.error("Error al actualizar:", err);
-    setToast({
-      mostrar: true,
-      mensaje: "Error al actualizar producto",
-      tipo: "error"
-    });
-  }
-};
-
-const manejoCambioInputEdicion = (e) => {
-  const { name, value } = e.target;
-  setProductoEditar((prev) => ({
-    ...prev,
-    [name]: value
-  }));
-};
-
-const manejoCambioArchivoActualizar = (e) => {
-  const archivo = e.target.files[0];
-  if (archivo && archivo.type.startsWith("image/")) {
+  const manejoCambioInputEdicion = (e) => {
+    const { name, value } = e.target;
     setProductoEditar((prev) => ({
       ...prev,
-      archivo
+      [name]: value
     }));
-  } else {
-    alert("Selecciona una imagen válida (JPG, PNG, etc.)");
-  }
-};
+  };
+
+  const manejoCambioArchivoActualizar = (e) => {
+    const archivo = e.target.files[0];
+    if (archivo && archivo.type.startsWith("image/")) {
+      setProductoEditar((prev) => ({
+        ...prev,
+        archivo
+      }));
+    } else {
+      alert("Selecciona una imagen válida (JPG, PNG, etc.)");
+    }
+  };
 
 
   const [productos, setProductos] = useState([]);
@@ -480,10 +480,10 @@ const manejoCambioArchivoActualizar = (e) => {
       />
 
       <ModalQRProducto
-  mostrar={mostrarModalQR}
-  onHide={() => setMostrarModalQR(false)}
-  producto={productoQR}
-/>
+        mostrar={mostrarModalQR}
+        onHide={() => setMostrarModalQR(false)}
+        producto={productoQR}
+      />
 
 
       <NotificacionOperacion
